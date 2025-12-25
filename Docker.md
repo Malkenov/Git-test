@@ -22,3 +22,22 @@
 18. - docker compose down - останавливает запушенный файл
 19.- docker compose up -d --build - это пересобирает образы, когда внутри образа было изменение
 20. - docker build -t "имя образа" . - это создание образа и присваивание ему имя, . значит откуда собирать образ
+21. - docker compose:
+      version: "3"
+      service:
+       api:
+          build: ./(название папки с бэкенд)
+          ports:
+             '-5555:5000'
+       mysql:
+          image: mysql
+          ports:
+             '-8888:8000'
+          volumes:
+              -mysql_data:/var/lib/mysql (маппинг томов,где будет хранится данные)
+          environment:
+              MYSQL_ROOT_PASSWORD: password
+              MYSQLDATABASE: time_db
+       volumes: (том для хранение данных внтури докера,а не локальном комптютере)
+          mysql_data
+22.
