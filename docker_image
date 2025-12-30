@@ -5,3 +5,39 @@ EXPOSE 80
 
 docker build -t my-nginx .
 docker run -d -p 8080:80 my-nginx
+----------------------------------------------------
+# stage 1
+FROM maven:3.9-eclipse-temurin-17
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# stage 2
+FROM eclipse-temurin-17-jre-alpine
+# Создается пользователь non root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Создается рабочая директория и меняется владелец
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+RUN chown -R appuser:appgroup /app
+# Переключение на другого пользователя
+USER appuser
+# Порт
+EXPOSE 8080
+# Запуск приложения 
+ENTRYPOINT ["java", "-jar", "app.jar"]
+-------------------------------------------------------
+FROM python 3.11-slim
+WORKDIR /app
+# копирование зависемостей
+COPY requirements.txt            
+# устновка завистемостей 
+RUN pip install requirements.txt 
+# копирование всех файлов
+COPY . .
+# какой порт слушает
+EXPOSE 5000
+# запуск приложения
+CMD ["python","python.py"]
