@@ -40,4 +40,3 @@
               MYSQLDATABASE: time_db
        volumes: (том для хранение данных внтури докера,а не локальном комптютере)
           mysql_data
-22.
